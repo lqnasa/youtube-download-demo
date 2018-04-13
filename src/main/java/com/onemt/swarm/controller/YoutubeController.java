@@ -46,9 +46,8 @@ public class YoutubeController {
         Pattern p = Pattern.compile("url_encoded_fmt_stream_map=([^&]*)");
         Matcher m = p.matcher(html);
         String urlStr = "";
-        while (m.find()) {
+        if (m.find()) {
             urlStr = m.group(1);
-            break;
         }
 
         if (StringUtils.isBlank(urlStr)) {
