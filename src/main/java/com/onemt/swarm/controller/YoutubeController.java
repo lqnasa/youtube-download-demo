@@ -34,7 +34,6 @@ public class YoutubeController {
     private final static String ERROR_CODE = "errorcode";
 
     @GetMapping("/videoId/{videoId}")
-    @ResponseBody
     public ResultVO<List<Video>> getDownloadInfo(@PathVariable String videoId) {
         List<Video> videos = new ArrayList<>();
         if (StringUtils.isBlank(videoId)) {
