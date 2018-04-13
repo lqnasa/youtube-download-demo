@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
@@ -40,7 +39,7 @@ public class YoutubeController {
             return ResultUtils.error(ExceptionCodeEnums.PARAM_ERROR);
         }
         String html = HttpClientUtils.doGet(String.format(GET_VIDEO_INFO_URL, videoId));
-        if (html.contains(ERROR_CODE)) {
+        if (StringUtils.isBlank(html) || html.contains(ERROR_CODE)) {
             return ResultUtils.error(ExceptionCodeEnums.PLAY_ERROR);
         }
 
@@ -62,20 +61,21 @@ public class YoutubeController {
             String[] typeStrs = urlStr.split(",");
             for (String typeStr : typeStrs) {
                 String[] urlStrs = typeStr.split("&");
-                Map<String, String> map = Arrays.stream(urlStrs).map(str -> str.split("=")).collect(Collectors.toMap(str -> str[0], str -> {
-                    try {
-                        String value = URLDecoder.decode(str[1], "UTF-8");
-                        return URLDecoder.decode(value, "UTF-8");
-                    } catch (UnsupportedEncodingException e) {
-                        e.printStackTrace();
-                    }
-                    return null;
-                }));
+                Map<String, String> map = Arrays.stream(urlStrs).map(str -> str.split("="))
+                        .collect(Collectors.toMap(str -> str[0], str -> {
+                            try {
+                                String value = URLDecoder.decode(str[1], "UTF-8");
+                                return URLDecoder.decode(value, "UTF-8");
+                            } catch (UnsupportedEncodingException e) {
+                                e.printStackTrace();
+                            }
+                            return null;
+                        }));
 
                 Pattern compile = Pattern.compile("clen=(\\d+)");
                 Matcher urlMatcher = compile.matcher(map.get("url"));
-                while (urlMatcher.find()){
-                    map.put("clen",urlMatcher.group(1));
+                while (urlMatcher.find()) {
+                    map.put("clen", urlMatcher.group(1));
                     break;
                 }
 
